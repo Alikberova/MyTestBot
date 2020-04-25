@@ -1,4 +1,4 @@
-﻿namespace MyTestBot.Models
+﻿namespace MyTestBot.Models //todo change to MyTestBot.UpdateModels
 {
     public class Chat
     {

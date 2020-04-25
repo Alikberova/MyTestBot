@@ -32,9 +32,25 @@ namespace MyTestBot.Web.Controllers
         }
 
         [HttpPost]
-        public async Task Post([FromBody]TelegramUpdate telegramUpdate) //todo [FromBody]
+        public async Task<OkResult> Post([FromBody]TelegramUpdate telegramUpdate) //todo [FromBody]
         {
-            await _botService.OnMessage(telegramUpdate);
+            //await _botService.OnMessage(telegramUpdate);
+            if (telegramUpdate == null) return Ok();
+
+            var commands = Bot.Commands;
+            
+            var message = telegramUpdate.Message;
+            var botClient = await Bot.GetBotClientAsync();
+
+            foreach (var command in commands)
+            {
+                if (command.Contains(message))
+                {
+                    await command.Execute(message, botClient);
+                    break;
+                }
+            }
+            return Ok();
         }
     }
 }

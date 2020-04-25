@@ -10,11 +10,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MyTestBot.BoredApi;
 
 namespace MyTestBot.Web
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -32,6 +34,7 @@ namespace MyTestBot.Web
             services.AddSingleton(typeof(BotConfig), botConfig);
 
             services.AddScoped<BotService>();
+            services.AddScoped<BoredApiService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +55,8 @@ namespace MyTestBot.Web
             {
                 endpoints.MapControllers();
             });
+
+            Bot.GetBotClientAsync().Wait();
         }
     }
 }
