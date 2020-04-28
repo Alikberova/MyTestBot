@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MyTestBot.BoredApi;
+using MyTestBot.Keyboard;
 
 namespace MyTestBot.Web
 {
@@ -20,9 +21,11 @@ namespace MyTestBot.Web
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            StaticConfig = configuration;
         }
 
         public IConfiguration Configuration { get; }
+        public static IConfiguration StaticConfig { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -30,11 +33,10 @@ namespace MyTestBot.Web
             services.AddControllers();
 
             BotConfig botConfig = Configuration.GetSection("BotConfig").Get<BotConfig>();
-
             services.AddSingleton(typeof(BotConfig), botConfig);
 
-            services.AddScoped<BotService>();
             services.AddScoped<BoredApiService>();
+            services.AddScoped<KeyboardService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

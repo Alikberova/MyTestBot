@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MyTestBot.BoredApi;
 using MyTestBot.Commands;
+using MyTestBot.Keyboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,8 @@ namespace MyTestBot.Web
     {
         private static TelegramBotClient botClient;
         private static List<Command> commandsList;
-        private static BotConfig _appSettings;
 
         public static IReadOnlyList<Command> Commands => commandsList.AsReadOnly();
-
-        public Bot(BotConfig appSettings)
-        {
-            _appSettings = appSettings;
-        }
 
         public static async Task<TelegramBotClient> GetBotClientAsync()
         {
@@ -28,30 +23,27 @@ namespace MyTestBot.Web
             {
                 return botClient;
             }
-            commandsList = new List<Command>();
-            commandsList.Add(new StartCommand());
-            commandsList.Add(new HeyCommand(new BoredApiService()));
+            BotConfig botConfig = Startup.StaticConfig.GetSection("BotConfig").Get<BotConfig>();
 
-            botClient = new TelegramBotClient("");
-            string hook = "https://900bf880.ngrok.io/bot";
-            await botClient.SetWebhookAsync(hook);
+            var boredService = new BoredApiService(botConfig);
+            var keyboardService = new KeyboardService();
+
+            commandsList = new List<Command>
+            {
+                new StartCommand(keyboardService),
+                new RandomCommand(boredService, keyboardService),
+                new FilterCommand(keyboardService),
+                new AccessibilityCommand(keyboardService),
+                //new KeyCommand(keyboardService),
+                //new ParticipantsCommand(keyboardService),
+                //new PriceCommand(keyboardService),
+                new TypeCommand(keyboardService)
+            };
+
+            botClient = new TelegramBotClient(botConfig.Token);
+            await botClient.SetWebhookAsync(botConfig.Ngrok + "/bot");
+
             return botClient;
         }
     }
-
-    //public class Test
-    //{
-    //    private AppSettings _botConfig;
-
-    //    public Test(AppSettings botConfig)
-    //    {
-    //        _botConfig = botConfig;
-    //    }
-
-    //    public string Tt()
-    //    {
-    //        var res = _botConfig.BotConfig.Ngrok;
-    //        return res;
-    //    }
-    //}
 }

@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyTestBot", "MyTestBot\MyTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyTestBot.Web", "MyTestBot.Web\MyTestBot.Web.csproj", "{B7FA1DA5-B312-4FB2-A739-DCA0C8C56689}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyTestBot.Console", "MyTestBot.Console\MyTestBot.Console.csproj", "{9232B5B1-7A68-4ADB-8EA8-52D74AB248D8}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{B7FA1DA5-B312-4FB2-A739-DCA0C8C56689}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7FA1DA5-B312-4FB2-A739-DCA0C8C56689}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7FA1DA5-B312-4FB2-A739-DCA0C8C56689}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9232B5B1-7A68-4ADB-8EA8-52D74AB248D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9232B5B1-7A68-4ADB-8EA8-52D74AB248D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9232B5B1-7A68-4ADB-8EA8-52D74AB248D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9232B5B1-7A68-4ADB-8EA8-52D74AB248D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

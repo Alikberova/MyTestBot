@@ -12,13 +12,19 @@ namespace MyTestBot.Web.Controllers
     [ApiController]
     public class BoredController : ControllerBase
     {
-        [HttpGet]
-        public async Task<string> Get()
+        private HttpClient _httpClient;
+
+        public BoredController()
         {
-            HttpClient httpClient = new HttpClient();
-            var resp = httpClient.GetAsync("https://www.boredapi.com/api/activity?accessibility=1").Result;
-            var cont = await resp.Content.ReadAsStringAsync();
-            return cont;
+            _httpClient = new HttpClient() { BaseAddress = new Uri("https://www.boredapi.com/api/") };
+        }
+
+        [HttpGet]
+        public async Task<string> Get() //can accept params
+        {
+            var response = _httpClient.GetAsync("activity").Result;
+            var content = await response.Content.ReadAsStringAsync();
+            return content;
         }
     }
 }

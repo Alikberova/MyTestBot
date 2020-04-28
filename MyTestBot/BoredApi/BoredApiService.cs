@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MyTestBot.BoredApi
@@ -11,17 +9,23 @@ namespace MyTestBot.BoredApi
     public class BoredApiService
     {
         //todo Get Activity, accessibility, type etc
+        private readonly BotConfig _botConfig;
+
+        public BoredApiService(BotConfig botConfig)
+        {
+            _botConfig = botConfig;
+        }
 
         public async Task<Bored> GetContent()
         {
             HttpClient httpClient = new HttpClient();
-            var resp = httpClient.GetAsync("https://900bf880.ngrok.io/bored").Result;
-            var cont = await resp.Content.ReadAsStringAsync();
+            var response = httpClient.GetAsync(_botConfig.Ngrok + "/bored").Result;
+            var content = await response.Content.ReadAsStringAsync();
 
             Bored bored = null;
             try
             {
-                bored = JsonConvert.DeserializeObject<Bored>(cont);
+                bored = JsonConvert.DeserializeObject<Bored>(content);
             }
             catch (Exception ex)
             {

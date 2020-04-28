@@ -6,9 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MyTestBot.Models;
-using Telegram.Bot;
-using Telegram.Bot.Types;
+using MyTestBot.TelegramModels;
 
 namespace MyTestBot.Web.Controllers
 {
@@ -17,12 +15,10 @@ namespace MyTestBot.Web.Controllers
     public class BotController : ControllerBase
     {
         private readonly BotConfig _botConfig;
-        private readonly BotService _botService;
 
-        public BotController(BotConfig botConfig, BotService botService)
+        public BotController(BotConfig botConfig)
         {
             _botConfig = botConfig;
-            _botService = botService;
         }
 
         [HttpGet]
@@ -32,9 +28,8 @@ namespace MyTestBot.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<OkResult> Post([FromBody]TelegramUpdate telegramUpdate) //todo [FromBody]
+        public async Task<OkResult> Post([FromBody]TelegramUpdate telegramUpdate)
         {
-            //await _botService.OnMessage(telegramUpdate);
             if (telegramUpdate == null) return Ok();
 
             var commands = Bot.Commands;

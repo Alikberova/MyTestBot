@@ -18,6 +18,6 @@ namespace MyTestBot.BoredApi
         
         public string Link { get; set; } //todo make nullable
         
-        public string Key { get; set; } //todo or int
+        public string Key { get; set; }
     }
 }
