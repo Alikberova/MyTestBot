@@ -4,60 +4,70 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace MyTestBot.Keyboard
 {
-    public class KeyboardService : Keyboard
+    public class KeyboardService
     {
-        private const double _buttonsCountPerLine = 3;
-
-        public override ReplyKeyboardMarkup ReplyKeyboardMarkup(List<string> keyboardButtonNames, 
-            bool resizeKeyboard = true, bool oneTimeKeyboard = false)
+        //todo delete these methods?
+        public InlineKeyboardMarkup FiltersOfActivityKeyboard()
         {
-            KeyboardButton[][] keyboard = GetKeyboard(keyboardButtonNames);
+            return ReplyKeyboardMarkup(new List<string>() { "key", "type", "participants", "price", "price range",
+                "accessibility", "accessibility range" });
+        }
 
-            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup
-            {
-                Keyboard = keyboard,
-                ResizeKeyboard = resizeKeyboard,
-                OneTimeKeyboard = oneTimeKeyboard
-            };
+        public InlineKeyboardMarkup RandomOrFilterKeyboard()
+        {
+            return ReplyKeyboardMarkup(new List<string>() { "random", "filter" });
+        }
 
+        public InlineKeyboardMarkup TypeOfActivityListKeyboard()
+        {
+            return ReplyKeyboardMarkup(new List<string>() { "education", "recreational",
+                    "social", "diy", "charity", "cooking", "relaxation", "music", "busywork" });
+        }
+
+        public InlineKeyboardMarkup ReplyKeyboardMarkup(List<string> keyboardButtonNames)
+        {
+            InlineKeyboardButton[][] keyboard = GetKeyboard(keyboardButtonNames);
+
+            InlineKeyboardMarkup replyKeyboardMarkup = new InlineKeyboardMarkup(keyboard);
             return replyKeyboardMarkup;
         }
 
-        private KeyboardButton[][] GetKeyboard(List<string> keyboardButtonNames)
+        private InlineKeyboardButton[][] GetKeyboard(List<string> keyboardButtonNames)
         {
-            var rowsCount = (int)Math.Ceiling(keyboardButtonNames.Count / _buttonsCountPerLine);
-            KeyboardButton[][] keyboardButtons = new KeyboardButton[rowsCount][];
+            var rowsCount = (int)Math.Ceiling(keyboardButtonNames.Count / Keyboard.CountOfButtonsPerRow);
+            InlineKeyboardButton[][] keyboardButtons = new InlineKeyboardButton[rowsCount][];
 
-            if (keyboardButtonNames.Count > _buttonsCountPerLine)
+            if (keyboardButtonNames.Count > Keyboard.CountOfButtonsPerRow)
             {
 
                 for (int i = 0; i < keyboardButtons.Length; i++)
                 {
-                    if (keyboardButtonNames.Count < _buttonsCountPerLine)
+                    if (keyboardButtonNames.Count < Keyboard.CountOfButtonsPerRow)
                     {
-                        keyboardButtons.SetValue(GetSingleLineButtons(keyboardButtonNames), i);
+                        keyboardButtons.SetValue(SingleRowButtons(keyboardButtonNames), i);
                         break;
                     }
 
-                    List<string> buttonsNamesCountForLine = keyboardButtonNames.GetRange(0, (int)_buttonsCountPerLine);
-                    keyboardButtonNames.RemoveRange(0, (int)_buttonsCountPerLine);
-                    keyboardButtons.SetValue(GetSingleLineButtons(buttonsNamesCountForLine), i);
+                    List<string> buttonsNamesCountForLine = keyboardButtonNames.GetRange(0,
+                        (int)Keyboard.CountOfButtonsPerRow);
+                    keyboardButtonNames.RemoveRange(0, (int)Keyboard.CountOfButtonsPerRow);
+                    keyboardButtons.SetValue(SingleRowButtons(buttonsNamesCountForLine), i);
                 }
             }
             else
             {
-                keyboardButtons.SetValue(GetSingleLineButtons(keyboardButtonNames), 0);
+                keyboardButtons.SetValue(SingleRowButtons(keyboardButtonNames), 0);
             }
-            
+
             return keyboardButtons;
         }
 
-        private KeyboardButton[] GetSingleLineButtons(List<string> keyboardButtonNames)
+        private InlineKeyboardButton[] SingleRowButtons(List<string> keyboardButtonNames)
         {
-            KeyboardButton[] keyboardButtons = new KeyboardButton[keyboardButtonNames.Count];
+            InlineKeyboardButton[] keyboardButtons = new InlineKeyboardButton[keyboardButtonNames.Count];
             foreach (var keyboardButtonName in keyboardButtonNames)
             {
-                KeyboardButton keyboardButton = new KeyboardButton() { Text = keyboardButtonName };
+                InlineKeyboardButton keyboardButton = new InlineKeyboardButton() { Text = keyboardButtonName, CallbackData = keyboardButtonName };
                 keyboardButtons.SetValue(keyboardButton, keyboardButtonNames.IndexOf(keyboardButtonName));
             }
 

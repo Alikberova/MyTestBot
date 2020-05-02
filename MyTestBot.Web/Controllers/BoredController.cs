@@ -20,7 +20,15 @@ namespace MyTestBot.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<string> Get() //can accept params
+        public async Task<string> Get()
+        {
+            var response = _httpClient.GetAsync("activity").Result;
+            var content = await response.Content.ReadAsStringAsync();
+            return content;
+        }
+
+        [HttpPost]
+        public async Task<string> Post() //todo params
         {
             var response = _httpClient.GetAsync("activity").Result;
             var content = await response.Content.ReadAsStringAsync();

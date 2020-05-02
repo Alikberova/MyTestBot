@@ -12,13 +12,13 @@
 
         public bool Is_Animated { get; set; }
 
-        public TelegramPhotoSize Thumb { get; set; }
+        public object Thumb { get; set; }
 
         public string Emoji { get; set; }
 
         public string Set_Name { get; set; }
 
-        public TelegramMaskPosition Mask_Position { get; set; }
+        public object Mask_Position { get; set; }
 
         public int File_size { get; set; }
     }

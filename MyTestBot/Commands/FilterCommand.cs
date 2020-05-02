@@ -12,6 +12,10 @@ namespace MyTestBot.Commands
     public class FilterCommand : Command
     {
         public override string Name => "filter";
+
+        public override List<string> InnerNames => new List<string>() { "key", "type", "participants", "price", "price range",
+                "accessibility", "accessibility range" };
+
         private readonly KeyboardService _keyboardService;
 
         public FilterCommand(KeyboardService keyboardService)
@@ -19,21 +23,29 @@ namespace MyTestBot.Commands
             _keyboardService = keyboardService;
         }
 
-        public override bool Contains(TelegramMessage message)
+        public override async Task Execute(TelegramMessage message, TelegramBotClient client, bool isInner)
         {
-            return message.Text.Contains(Name);
-        }
-
-        public override async Task Execute(TelegramMessage message, TelegramBotClient client)
-        {
-            string text = "Please, choose comething good!";
-            var keyboardButtonsNames = new List<string>() { "key", "type", "participants", "price", "price range", 
-                "accessibility", "accessibility range" };
+            string text = "Select which filter: ";
             try
             {
                 await client.SendTextMessageAsync(message.Chat.Id, text, parseMode: ParseMode.Markdown,
                 false, false, 0, 
-                _keyboardService.ReplyKeyboardMarkup(keyboardButtonsNames));
+                _keyboardService.FiltersOfActivityKeyboard());
+            }
+            catch (Exception ex)
+            {
+                Debugger.Break();
+            }
+        }
+
+        public override async Task Execute(TelegramCallbackQuery callbackQuery, TelegramBotClient client, bool isInnerCommand)
+        {
+            string text = "Select which filter: ";
+            try
+            {
+                await client.SendTextMessageAsync(callbackQuery.Message.Chat.Id, text, parseMode: ParseMode.Markdown,
+                false, false, 0,
+                _keyboardService.FiltersOfActivityKeyboard());
             }
             catch (Exception ex)
             {

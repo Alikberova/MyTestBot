@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MyTestBot.BoredApi
+﻿namespace MyTestBot.BoredApi
 {
     public class Bored
 	{
@@ -16,7 +12,7 @@ namespace MyTestBot.BoredApi
         
         public double? Price { get; set; }
         
-        public string Link { get; set; } //todo make nullable
+        public string Link { get; set; }
         
         public string Key { get; set; }
     }

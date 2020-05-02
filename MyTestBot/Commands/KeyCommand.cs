@@ -8,24 +8,27 @@ using Telegram.Bot;
 
 namespace MyTestBot.Commands
 {
-    public class KeyCommand : Command
+    public class KeyCommand //: Command
     {
-        public override string Name => throw new NotImplementedException();
-        private readonly KeyboardService _keyboardService;
+        //public override string Name => null;
 
-        public KeyCommand(KeyboardService keyboardService)
-        {
-            _keyboardService = keyboardService;
-        }
+        //public override List<string> InnerNames => throw new NotImplementedException();
 
-        public override bool Contains(TelegramMessage message)
-        {
-            throw new NotImplementedException();
-        }
+        //private readonly KeyboardService _keyboardService;
 
-        public override Task Execute(TelegramMessage message, TelegramBotClient client)
-        {
-            throw new NotImplementedException();
-        }
+        //public KeyCommand(KeyboardService keyboardService)
+        //{
+        //    _keyboardService = keyboardService;
+        //}
+
+        //public override Task Execute(TelegramMessage message, TelegramBotClient client, bool isInner)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public override Task Execute(TelegramCallbackQuery callbackQuery, TelegramBotClient client, bool isInnerCommand)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

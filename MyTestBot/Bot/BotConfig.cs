@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MyTestBot
+﻿namespace MyTestBot
 {
     public class BotConfig
     {
@@ -12,6 +8,6 @@ namespace MyTestBot
 
         public string ApiHash { get; set; }
 
-        public string Ngrok { get; set; }
+        public string SiteAdress { get; set; }
     }
 }

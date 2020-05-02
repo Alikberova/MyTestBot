@@ -3,9 +3,11 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace MyTestBot.Keyboard
 {
-    public abstract class Keyboard
+    public class Keyboard
     {
-        public abstract ReplyKeyboardMarkup ReplyKeyboardMarkup(List<string> keyboardButtonNames, bool resizeKeyboard,
-            bool oneTimeKeyboard);
+        public static double CountOfButtonsPerRow = 3;
+
+        public static List<string> TypeOfActivityList { get; } = new List<string>() { "education", "recreational",
+                    "social", "diy", "charity", "cooking", "relaxation", "music", "busywork" };
     }
 }

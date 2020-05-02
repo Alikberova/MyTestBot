@@ -14,7 +14,7 @@
 
         public string Username { get; set; }
 
-        public object Photo { get; set; } //object ChatPhoto
+        public object Photo { get; set; }
 
         public string Description { get; set; }
 

@@ -25,23 +25,23 @@ namespace MyTestBot.Web
             }
             BotConfig botConfig = Startup.StaticConfig.GetSection("BotConfig").Get<BotConfig>();
 
-            var boredService = new BoredApiService(botConfig);
+            var boredService = new BoredApiService();
             var keyboardService = new KeyboardService();
 
             commandsList = new List<Command>
             {
                 new StartCommand(keyboardService),
-                new RandomCommand(boredService, keyboardService),
                 new FilterCommand(keyboardService),
-                new AccessibilityCommand(keyboardService),
-                //new KeyCommand(keyboardService),
-                //new ParticipantsCommand(keyboardService),
-                //new PriceCommand(keyboardService),
-                new TypeCommand(keyboardService)
+                new RandomCommand(keyboardService, boredService),
+                new AccessibilityCommand(keyboardService, boredService),
+                //new KeyCommand(keyboardService, boredService),
+                new ParticipantsCommand(keyboardService, boredService),
+                new PriceCommand(keyboardService, boredService),
+                new TypeCommand(keyboardService, boredService)
             };
 
             botClient = new TelegramBotClient(botConfig.Token);
-            await botClient.SetWebhookAsync(botConfig.Ngrok + "/bot");
+            await botClient.SetWebhookAsync(BotConstants.Ngrok + "/bot");
 
             return botClient;
         }

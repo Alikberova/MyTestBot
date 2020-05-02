@@ -17,9 +17,15 @@ namespace MyTestBot.Web
 {
     public class Startup
     {
-
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env)
         {
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            if (env.IsDevelopment())
+                builder.AddUserSecrets<Startup>();
+
+            builder.AddEnvironmentVariables();
+            IConfigurationRoot configuration = builder.Build();
+
             Configuration = configuration;
             StaticConfig = configuration;
         }
