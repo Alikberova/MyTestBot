@@ -1,7 +1,17 @@
 ﻿namespace MyTestBot.TelegramModels
 {
-    public class TelegramCallbackQuery
+    public class TelegramCallbackQuery : ITelegramUpdateData
     {
+        TelegramMessage ITelegramUpdateData.GetMessage()
+        {
+            return Message;
+        }
+
+        public string GetText()
+        {
+            return Data;
+        }
+
         public string Id { get; set; }
 
         public TelegramUser From { get; set; }

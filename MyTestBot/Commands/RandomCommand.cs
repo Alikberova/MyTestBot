@@ -1,58 +1,30 @@
-﻿using MyTestBot.BoredApi;
-using MyTestBot.Keyboard;
-using MyTestBot.TelegramModels;
-using System;
+﻿using MyTestBot.TelegramModels;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Telegram.Bot;
-using Telegram.Bot.Types.Enums;
 
 namespace MyTestBot.Commands
 {
     public class RandomCommand : Command
     {
+        //todo client.SendText..() calling 2 times and text sends  2times
+
         public override string Name => "random";
 
-        public override List<string> InnerNames => null;
+        public override List<string> InnerNames => new List<string>() { "random", "filter" };
 
-        private readonly KeyboardService _keyboardService;
-        private readonly BoredApiService _boredApiService;
+        public override string Message => null;
 
-        public RandomCommand(KeyboardService keyboardService, BoredApiService boredApiService)
+        private readonly CommandService _commandService;
+
+        public RandomCommand(CommandService commandService)
         {
-            _keyboardService = keyboardService;
-            _boredApiService = boredApiService;
+            _commandService = commandService;
         }
 
-        public override async Task Execute(TelegramMessage message, TelegramBotClient client, bool isInner)
+        public override async Task Execute<T>(TelegramUpdate update, TelegramBotClient client, bool isInnerCommand)
         {
-            string content = _boredApiService.GetContent<string>().Result.Activity;
-            try
-            {
-                await client.SendTextMessageAsync(message.Chat.Id, content, parseMode: ParseMode.Markdown,
-                false, false, 0, 
-                _keyboardService.RandomOrFilterKeyboard());
-            }
-            catch (Exception ex)
-            {
-                Debugger.Break();
-            }
-        }
-
-        public override async Task Execute(TelegramCallbackQuery callbackQuery, TelegramBotClient client, bool isInnerCommand)
-        {
-            string content = _boredApiService.GetContent<string>().Result.Activity;
-            try
-            {
-                await client.SendTextMessageAsync(callbackQuery.Message.Chat.Id, content, parseMode: ParseMode.Markdown,
-                false, false, 0,
-                _keyboardService.RandomOrFilterKeyboard());
-            }
-            catch (Exception ex)
-            {
-                Debugger.Break();
-            }
+            await _commandService.Execute<T, RandomCommand>(update, client, isInnerCommand);
         }
     }
 }

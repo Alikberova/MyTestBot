@@ -6,24 +6,6 @@ namespace MyTestBot.Keyboard
 {
     public class KeyboardService
     {
-        //todo delete these methods?
-        public InlineKeyboardMarkup FiltersOfActivityKeyboard()
-        {
-            return ReplyKeyboardMarkup(new List<string>() { "key", "type", "participants", "price", "price range",
-                "accessibility", "accessibility range" });
-        }
-
-        public InlineKeyboardMarkup RandomOrFilterKeyboard()
-        {
-            return ReplyKeyboardMarkup(new List<string>() { "random", "filter" });
-        }
-
-        public InlineKeyboardMarkup TypeOfActivityListKeyboard()
-        {
-            return ReplyKeyboardMarkup(new List<string>() { "education", "recreational",
-                    "social", "diy", "charity", "cooking", "relaxation", "music", "busywork" });
-        }
-
         public InlineKeyboardMarkup ReplyKeyboardMarkup(List<string> keyboardButtonNames)
         {
             InlineKeyboardButton[][] keyboard = GetKeyboard(keyboardButtonNames);

@@ -2,6 +2,6 @@
 {
     public class BotConstants
     {
-        public const string Ngrok = "https://1135607e.ngrok.io";
+        public const string Ngrok = "https://4039b2b0.ngrok.io";
     }
 }

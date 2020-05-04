@@ -1,7 +1,19 @@
 ﻿namespace MyTestBot.TelegramModels
 {
-    public class TelegramMessage
+    public class TelegramMessage : ITelegramUpdateData
     {
+        TelegramMessage ITelegramUpdateData.GetMessage()
+        {
+            return TelegramMessageObject;
+        }
+
+        public string GetText()
+        {
+            return Text;
+        }
+
+        public TelegramMessage TelegramMessageObject { get; set; }  //todo fix null
+
         public int Message_Id { get; set; } //not opt
 
         public TelegramUser From { get; set; }

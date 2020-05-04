@@ -1,11 +1,7 @@
-﻿using MyTestBot.Keyboard;
-using MyTestBot.TelegramModels;
-using System;
+﻿using MyTestBot.TelegramModels;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Telegram.Bot;
-using Telegram.Bot.Types.Enums;
 
 namespace MyTestBot.Commands
 {
@@ -16,41 +12,18 @@ namespace MyTestBot.Commands
         public override List<string> InnerNames => new List<string>() { "key", "type", "participants", "price", "price range",
                 "accessibility", "accessibility range" };
 
-        private readonly KeyboardService _keyboardService;
+        public override string Message => "Select which filter:";
 
-        public FilterCommand(KeyboardService keyboardService)
+        private readonly CommandService _commandService;
+
+        public FilterCommand(CommandService commandService)
         {
-            _keyboardService = keyboardService;
+            _commandService = commandService;
         }
 
-        public override async Task Execute(TelegramMessage message, TelegramBotClient client, bool isInner)
+        public override async Task Execute<T>(TelegramUpdate update, TelegramBotClient client, bool isInnerCommand)
         {
-            string text = "Select which filter: ";
-            try
-            {
-                await client.SendTextMessageAsync(message.Chat.Id, text, parseMode: ParseMode.Markdown,
-                false, false, 0, 
-                _keyboardService.FiltersOfActivityKeyboard());
-            }
-            catch (Exception ex)
-            {
-                Debugger.Break();
-            }
-        }
-
-        public override async Task Execute(TelegramCallbackQuery callbackQuery, TelegramBotClient client, bool isInnerCommand)
-        {
-            string text = "Select which filter: ";
-            try
-            {
-                await client.SendTextMessageAsync(callbackQuery.Message.Chat.Id, text, parseMode: ParseMode.Markdown,
-                false, false, 0,
-                _keyboardService.FiltersOfActivityKeyboard());
-            }
-            catch (Exception ex)
-            {
-                Debugger.Break();
-            }
+            await _commandService.Execute<T, FilterCommand>(update, client, isInnerCommand);
         }
     }
 }

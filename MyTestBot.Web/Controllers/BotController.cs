@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyTestBot.Commands;
 using MyTestBot.TelegramModels;
@@ -40,29 +37,29 @@ namespace MyTestBot.Web.Controllers
 
             try
             {
-                var msg = update.Message;
+                var message = update.Message;
                 var callBack = update.Callback_Query;
 
                 foreach (Command command in commands)
                 {
                     var inners = command.InnerNames;
 
-                    if (msg != null && command.Contains(msg))
+                    if (message != null && command.Contains(message))
                     {
                         if (inners?.Count > 0)
                         {
-                            await command.Execute(msg, botClient, true);
+                            await command.Execute<TelegramMessage>(update, botClient, true);
                             break;
                         }
 
-                        await command.Execute(msg, botClient, false);
+                        await command.Execute<TelegramMessage>(update, botClient, false);
                         break;
                     }
                     else if (callBack != null)
                     {
                         if (command.Contains(callBack))
                         {
-                            await command.Execute(callBack, botClient, false);
+                            await command.Execute<TelegramCallbackQuery>(update, botClient, false);
                             break;
                         }
                         else if(inners?.Count > 0)
@@ -71,11 +68,9 @@ namespace MyTestBot.Web.Controllers
                             {
                                 if (callBack.Data == inner)
                                 {
-                                    await command.Execute(callBack, botClient, true);
+                                    await command.Execute<TelegramCallbackQuery>(update, botClient, true);
                                     break;
                                 }
-
-                                //break;
                             }
                         }
                     }
@@ -85,24 +80,6 @@ namespace MyTestBot.Web.Controllers
             {
                 Debugger.Break();
             }
-            //foreach (Command command in commands)
-            //{
-            //    if (command.Contains(message))
-            //    {
-            //        await command.Execute(message, botClient, false);
-            //        break;
-            //    }
-            //    else if (command.InnerNames?.Count > 0)
-            //    {
-            //        await command.Execute(message, botClient, isInnerCommand: true);
-            //        break;
-            //    }
-            //    else if (command.Contains(telegramUpdate.Callback_Query))
-            //    {
-            //        //await command.Execute(telegramUpdate.Callback_Query, botClient, isInnerCommand: false);
-            //        break;
-            //    }
-            //}
             return Ok();
         }
     }

@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MyTestBot.BoredApi;
+using MyTestBot.Commands;
 using MyTestBot.Keyboard;
 
 namespace MyTestBot.Web
@@ -43,6 +44,7 @@ namespace MyTestBot.Web
 
             services.AddScoped<BoredApiService>();
             services.AddScoped<KeyboardService>();
+            services.AddScoped<CommandService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

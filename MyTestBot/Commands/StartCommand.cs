@@ -1,11 +1,7 @@
-﻿using MyTestBot.Keyboard;
-using MyTestBot.TelegramModels;
-using System;
+﻿using MyTestBot.TelegramModels;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Telegram.Bot;
-using Telegram.Bot.Types.Enums;
 
 namespace MyTestBot.Commands
 {
@@ -14,28 +10,21 @@ namespace MyTestBot.Commands
         //todo add translator
         public override string Name => @"/start";
 
-        public override List<string> InnerNames => null;
+        //todo because of this list randomCommand works even if commented out
+        public override List<string> InnerNames => new List<string>() { "random", "filter" };
 
-        private readonly KeyboardService _keyboardService;
+        public override string Message => "Hallo! What do you want to do?\nFilter from the activities or try random one";
 
-        public StartCommand(KeyboardService keyboardService)
+        private readonly CommandService _commandService;
+
+        public StartCommand(CommandService commandService)
         {
-            _keyboardService = keyboardService;
+            _commandService = commandService;
         }
 
-        public override async Task Execute(TelegramMessage message, TelegramBotClient botClient, bool isInner)
+        public override async Task Execute<T>(TelegramUpdate update, TelegramBotClient client, bool isInnerCommand)
         {
-            var chatId = message.Chat.Id;
-            await botClient.SendTextMessageAsync(chatId, "Hallo! What do you want to do?" +
-                "\nFilter from the activities or try random one",
-                parseMode: ParseMode.Markdown, 
-                false, false, 0, 
-                _keyboardService.RandomOrFilterKeyboard());
-        }
-
-        public override async Task Execute(TelegramCallbackQuery callbackQuery, TelegramBotClient client, bool isInnerCommand)
-        {
-            
+            await _commandService.Execute<T, StartCommand>(update, client, isInnerCommand);
         }
     }
 }
