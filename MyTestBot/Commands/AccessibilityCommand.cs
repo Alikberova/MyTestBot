@@ -1,13 +1,14 @@
-﻿using MyTestBot.TelegramModels;
+﻿using MyTestBot.Commands.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace MyTestBot.Commands
 {
-    public class AccessibilityCommand : Command //todo add tip/prompt for commands
+    public class AccessibilityCommand : Command
     {
-        public override string Name => "accessibility";
+        public override string Name => nameof(FilterEnum.Accessibility);
 
         public override List<string> InnerNames => new List<string>() { "0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6",
             "0.7", "0.8", "0.9", "1" };
@@ -21,9 +22,9 @@ namespace MyTestBot.Commands
             _commandService = commandService;
         }
 
-        public override async Task Execute<T>(TelegramUpdate update, TelegramBotClient client, bool isInnerCommand)
+        public override async Task Execute<T>(Update update, TelegramBotClient client)
         {
-            await _commandService.Execute<T, AccessibilityCommand>(update, client, isInnerCommand);
+            await _commandService.Execute<T, AccessibilityCommand>(update, client);
         }
     }
 }

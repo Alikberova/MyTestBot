@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using MyTestBot.BoredApi;
 using MyTestBot.Commands;
 using MyTestBot.Keyboard;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using Newtonsoft.Json;
 
 namespace MyTestBot.Web
 {
@@ -37,14 +39,14 @@ namespace MyTestBot.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-
+            services.AddControllers().AddXmlSerializerFormatters().AddNewtonsoftJson();
             BotConfig botConfig = Configuration.GetSection("BotConfig").Get<BotConfig>();
             services.AddSingleton(typeof(BotConfig), botConfig);
 
             services.AddScoped<BoredApiService>();
             services.AddScoped<KeyboardService>();
             services.AddScoped<CommandService>();
+            services.AddScoped<BotService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,13 +1,12 @@
 ﻿using MyTestBot.BoredApi;
-using MyTestBot.TelegramModels;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot;
 using System.Diagnostics;
 using MyTestBot.Keyboard;
+using Telegram.Bot.Types;
+using MyTestBot.Commands.Enums;
 
 namespace MyTestBot.Commands
 {
@@ -22,31 +21,47 @@ namespace MyTestBot.Commands
             _keyboardService = keyboardService;
         }
 
-        public async Task Execute<T1, T2>(TelegramUpdate telegramUpdate, TelegramBotClient client, bool isInnerCommand) where T2 : Command
+        public async Task Execute<T1, T2>(Update update, TelegramBotClient client) where T2 : Command
         {
-            ITelegramUpdateData updateData = GetUpdateData<T1>(telegramUpdate);
-            TelegramMessage message = updateData.GetMessage();
-            string incomingText = updateData.GetText();
-
-            if (message == null) message = telegramUpdate.Message;
-
             try
             {
-                Type commandType = typeof(T2);
-                var command = (T2)typeof(T2).GetConstructor(new Type[] { typeof(CommandService) }).Invoke(new object[1]);
+                //todo check how works with Commands where keyboard service only
+                var type = new Type[] { typeof(CommandService) };
+                var constructor = typeof(T2).GetConstructor(type);
+                var res = constructor.Invoke(new object[1]);
 
-                if (isInnerCommand && TextEqualsInnerCommand<Command>(command, incomingText))
+                Command command = (T2)typeof(T2).GetConstructor(new Type[] { typeof(CommandService) }).Invoke(new object[1]);
+
+                long chatId = 0;
+
+                if (update.Type == UpdateType.CallbackQuery)
                 {
-                    await AnswerOnInnerCommand(command, telegramUpdate, client);
+                    chatId = update.CallbackQuery.Message.Chat.Id;
+                    string inputData = update.CallbackQuery.Data;
+
+                    if (command.InnerNames != null && (bool)command.InnerNames?.Contains(inputData))
+                    {
+                        await GenerateAndSendActivityToChat(command, update, client);
+                    }
+                    else
+                    {
+                        await client.SendTextMessageAsync(chatId, command.Message,
+                            ParseMode.Markdown, false, false, 0,
+                            _keyboardService.GetKeyboard(command.InnerNames));
+                    }
                 }
-                else
+                else if (update.Type == UpdateType.Message) //start, random, filter
                 {
-                    if (string.IsNullOrEmpty(command.Message)) return;
-
-                    await client.SendTextMessageAsync(message.Chat.Id, command.Message,
-                        parseMode: ParseMode.Markdown,
-                        false, false, 0,
-                        _keyboardService.ReplyKeyboardMarkup(command.InnerNames));
+                    if (command?.Name == "random")
+                    {
+                        await GenerateAndSendActivityToChat(command, update, client);
+                    }
+                    //else if (command?.Name == "filter")
+                    //{
+                    //    await client.SendTextMessageAsync(update.Message.Chat.Id, command.Message,
+                    //        ParseMode.Markdown, false, false, 0,
+                    //        _keyboardService.ReplyKeyboardMarkup(command.InnerNames));
+                    //}
                 }
             }
             catch (Exception ex)
@@ -55,31 +70,37 @@ namespace MyTestBot.Commands
             }
         }
 
-        public async Task AnswerOnInnerCommand(Command command, TelegramUpdate telegramUpdate, TelegramBotClient client)
+        //here type of update is Message
+        public async Task GenerateAndSendActivityToChat(Command command, Update update, TelegramBotClient client)
         {
-            int chatId;
-            TelegramMessage message = telegramUpdate.Message;
-            TelegramCallbackQuery callbackQuery = telegramUpdate.Callback_Query;
-            var commandType = command.GetType();
             BoredActivity activity = null;
-            if (message != null)
-            {
-                chatId = message.Chat.Id;
-                activity = GenerateActivity(commandType.Name, message.Text);
-            }
-            else
-            {
-                
-                activity = GenerateActivity(commandType.Name, callbackQuery.Data);
-                chatId = callbackQuery.Message.Chat.Id;
-            }
+            var commandType = command.GetType();
 
-            var content = _boredApiService.GetActivityContent(activity).Result;
-            await client.SendTextMessageAsync(chatId, content,
-                parseMode: ParseMode.Markdown);
+            string text = update?.Message?.Text ?? update.CallbackQuery.Data;
+            long chatId = update?.Message?.Chat?.Id ?? update.CallbackQuery.Message.Chat.Id;
+
+            try
+            {
+                if (commandType == typeof(PriceCommand))
+                {
+                    Enum.TryParse(text, out PriceEnum priceEnum);
+                    int enumValue = (int)priceEnum;
+                    string valueForRequest = "0." + enumValue.ToString();
+                    text = valueForRequest;
+                }
+
+                activity = GenerateActivity(commandType.Name, text);
+                string content = _boredApiService.GetActivityContent(activity).Result;
+
+                await client.SendTextMessageAsync(chatId, content, ParseMode.Markdown);
+            }
+            catch (Exception ex)
+            {
+                Debugger.Break();
+            }
         }
 
-        public BoredActivity GenerateActivity(string commandName, string data)
+        public BoredActivity GenerateActivity(string commandName, string inputData)
         {
             BoredActivity activity = new BoredActivity();
 
@@ -91,7 +112,7 @@ namespace MyTestBot.Commands
 
                 if (commandName.StartsWith(propName))
                 {
-                    activity.GetType().GetProperty(propName).SetValue(activity, data);
+                    activity.GetType().GetProperty(propName).SetValue(activity, inputData);
                     break; //todo break for now
                 }
             }
@@ -99,29 +120,19 @@ namespace MyTestBot.Commands
             return activity;
         }
 
-        private bool TextEqualsInnerCommand<T>(T command, string text) where T : Command
-        {
-            if (command.InnerNames == null || command.InnerNames?.Count == 0) return false;
+        //private bool TextEqualsInnerCommand<T>(T command, string text) where T : Command
+        //{
+        //    if (command.InnerNames == null || command.InnerNames?.Count == 0) return false;
 
-            foreach (string name in command.InnerNames)
-            {
-                if (text == name)
-                {
-                    return true;
-                }
-            }
+        //    foreach (string name in command.InnerNames)
+        //    {
+        //        if (text == name)
+        //        {
+        //            return true;
+        //        }
+        //    }
 
-            return false;
-        }
-
-        public ITelegramUpdateData GetUpdateData<T>(TelegramUpdate telegramUpdate)
-        {
-            if (typeof(T) == typeof(TelegramMessage))
-            {
-                return telegramUpdate.Message;
-            }
-
-            return telegramUpdate.Callback_Query;
-        }
+        //    return false;
+        //}
     }
 }

@@ -17,7 +17,7 @@ namespace MyTestBot.BoredApi
         {
             try
             {
-                HttpClient httpClient = new HttpClient();
+                using HttpClient httpClient = new HttpClient();
                 UriBuilder uriBuilder = new UriBuilder("https://www.boredapi.com/api/activity");
 
                 var query = FormQuery(uriBuilder, activity);
@@ -46,7 +46,9 @@ namespace MyTestBot.BoredApi
                 var content = await response.Content.ReadAsStringAsync();
                 var activityResult = JsonConvert.DeserializeObject<BoredActivity>(content);
 
+
                 return activityResult.Activity;
+
             }
             catch (Exception ex)
             {

@@ -1,17 +1,15 @@
-﻿using MyTestBot.TelegramModels;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace MyTestBot.Commands
 {
     public class RandomCommand : Command
     {
-        //todo client.SendText..() calling 2 times and text sends  2times
-
         public override string Name => "random";
 
-        public override List<string> InnerNames => new List<string>() { "random", "filter" };
+        public override List<string> InnerNames => null;
 
         public override string Message => null;
 
@@ -22,9 +20,9 @@ namespace MyTestBot.Commands
             _commandService = commandService;
         }
 
-        public override async Task Execute<T>(TelegramUpdate update, TelegramBotClient client, bool isInnerCommand)
+        public override async Task Execute<T>(Update update, TelegramBotClient client)
         {
-            await _commandService.Execute<T, RandomCommand>(update, client, isInnerCommand);
+            await _commandService.Execute<T, RandomCommand>(update, client);
         }
     }
 }

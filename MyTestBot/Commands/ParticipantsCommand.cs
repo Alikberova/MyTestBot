@@ -1,13 +1,15 @@
-﻿using MyTestBot.TelegramModels;
+﻿using MyTestBot.Commands.Enums;
+using MyTestBot.Keyboard;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace MyTestBot.Commands
 {
     public class ParticipantsCommand : Command
     {
-        public override string Name => "participants";
+        public override string Name => nameof(FilterEnum.Participants);
 
         public override List<string> InnerNames => new List<string>() { "1", "2", "3", "4", "5" };
 
@@ -20,9 +22,9 @@ namespace MyTestBot.Commands
             _commandService = commandService;
         }
 
-        public override async Task Execute<T>(TelegramUpdate update, TelegramBotClient client, bool isInnerCommand)
+        public override async Task Execute<T>(Update update, TelegramBotClient client)
         {
-            await _commandService.Execute<T, ParticipantsCommand>(update, client, isInnerCommand);
+            await _commandService.Execute<T, ParticipantsCommand>(update, client);
         }
     }
 }

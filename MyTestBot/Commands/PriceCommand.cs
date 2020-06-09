@@ -1,17 +1,19 @@
-﻿using MyTestBot.TelegramModels;
+﻿using MyTestBot.Commands.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace MyTestBot.Commands
 {
     public class PriceCommand : Command
     {
-        public override string Name => "price";
+        public override string Name => nameof(FilterEnum.Price);
 
-        public override List<string> InnerNames => new List<string>() { "0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6" };
+        public override List<string> InnerNames => new List<string>() { nameof(PriceEnum.Free), nameof(PriceEnum.Cheap),
+            nameof(PriceEnum.Inexpensive), nameof(PriceEnum.Average), nameof(PriceEnum.Expensive) };
 
-        public override string Message => "Price? Describe the cost of the event with zero being free";
+        public override string Message => "Price? Describe the cost of the event";
 
         private readonly CommandService _commandService;
 
@@ -20,9 +22,9 @@ namespace MyTestBot.Commands
             _commandService = commandService;
         }
 
-        public override async Task Execute<T>(TelegramUpdate update, TelegramBotClient client, bool isInnerCommand)
+        public override async Task Execute<T>(Update update, TelegramBotClient client)
         {
-            await _commandService.Execute<T, PriceCommand>(update, client, isInnerCommand);
+            await _commandService.Execute<T, PriceCommand>(update, client);
         }
     }
 }

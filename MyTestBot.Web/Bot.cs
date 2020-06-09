@@ -31,8 +31,8 @@ namespace MyTestBot.Web
 
             commandsList = new List<Command>
             {
-                new StartCommand(commandService),
-                new FilterCommand(commandService),
+                new StartCommand(keyboardService),
+                new FilterCommand(commandService, keyboardService),
                 new RandomCommand(commandService),
                 new AccessibilityCommand(commandService),
                 //new KeyCommand(commandService),

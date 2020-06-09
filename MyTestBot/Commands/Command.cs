@@ -1,7 +1,8 @@
-﻿using MyTestBot.TelegramModels;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace MyTestBot.Commands
 {
@@ -14,16 +15,16 @@ namespace MyTestBot.Commands
 #nullable enable
         public abstract List<string> InnerNames { get; }
 
-        public abstract Task Execute<T>(TelegramUpdate update, TelegramBotClient client, bool isInnerCommand);
+        public abstract Task Execute<T>(Update update, TelegramBotClient client);
 
-        public bool Contains(TelegramMessage message)
+        public bool Contains(Message message)
         {
-            return message.Text.Contains(Name);
+            return message.Text.Contains(Name, StringComparison.CurrentCultureIgnoreCase);
         }
 
-        public bool Contains(TelegramCallbackQuery callbackQuery)
+        public bool Contains(CallbackQuery callbackQuery)
         {
-            return callbackQuery.Data.Contains(Name);
+            return callbackQuery.Data.Contains(Name, StringComparison.CurrentCultureIgnoreCase);
         }
     }
 }

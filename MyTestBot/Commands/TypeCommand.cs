@@ -1,13 +1,15 @@
-﻿using MyTestBot.TelegramModels;
+﻿using MyTestBot.Commands.Enums;
+using MyTestBot.Keyboard;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace MyTestBot.Commands
 {
     public class TypeCommand : Command
     {
-        public override string Name => "type";
+        public override string Name => nameof(FilterEnum.Type);
 
         public override List<string> InnerNames => new List<string>() { "education", "recreational",
                     "social", "diy", "charity", "cooking", "relaxation", "music", "busywork" };
@@ -22,9 +24,9 @@ namespace MyTestBot.Commands
         }
         //todo during press "type" - 1.filters, 2.types appers in telegram
 
-        public override async Task Execute<T>(TelegramUpdate update, TelegramBotClient client, bool isInnerCommand)
+        public override async Task Execute<T>(Update update, TelegramBotClient client)
         {
-            await _commandService.Execute<T, TypeCommand>(update, client, isInnerCommand);
+            await _commandService.Execute<T, TypeCommand>(update, client);
         }
     }
 }

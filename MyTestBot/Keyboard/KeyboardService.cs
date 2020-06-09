@@ -6,33 +6,27 @@ namespace MyTestBot.Keyboard
 {
     public class KeyboardService
     {
-        public InlineKeyboardMarkup ReplyKeyboardMarkup(List<string> keyboardButtonNames)
-        {
-            InlineKeyboardButton[][] keyboard = GetKeyboard(keyboardButtonNames);
+        private const double CountOfButtonsPerRow = 3;
 
-            InlineKeyboardMarkup replyKeyboardMarkup = new InlineKeyboardMarkup(keyboard);
-            return replyKeyboardMarkup;
-        }
-
-        private InlineKeyboardButton[][] GetKeyboard(List<string> keyboardButtonNames)
+        public InlineKeyboardMarkup GetKeyboard(List<string> keyboardButtonNames)
         {
-            var rowsCount = (int)Math.Ceiling(keyboardButtonNames.Count / Keyboard.CountOfButtonsPerRow);
+            var rowsCount = (int)Math.Ceiling(keyboardButtonNames.Count / CountOfButtonsPerRow);
             InlineKeyboardButton[][] keyboardButtons = new InlineKeyboardButton[rowsCount][];
 
-            if (keyboardButtonNames.Count > Keyboard.CountOfButtonsPerRow)
+            if (keyboardButtonNames.Count > CountOfButtonsPerRow)
             {
 
                 for (int i = 0; i < keyboardButtons.Length; i++)
                 {
-                    if (keyboardButtonNames.Count < Keyboard.CountOfButtonsPerRow)
+                    if (keyboardButtonNames.Count < CountOfButtonsPerRow)
                     {
                         keyboardButtons.SetValue(SingleRowButtons(keyboardButtonNames), i);
                         break;
                     }
 
                     List<string> buttonsNamesCountForLine = keyboardButtonNames.GetRange(0,
-                        (int)Keyboard.CountOfButtonsPerRow);
-                    keyboardButtonNames.RemoveRange(0, (int)Keyboard.CountOfButtonsPerRow);
+                        (int)CountOfButtonsPerRow);
+                    keyboardButtonNames.RemoveRange(0, (int)CountOfButtonsPerRow);
                     keyboardButtons.SetValue(SingleRowButtons(buttonsNamesCountForLine), i);
                 }
             }
@@ -41,7 +35,8 @@ namespace MyTestBot.Keyboard
                 keyboardButtons.SetValue(SingleRowButtons(keyboardButtonNames), 0);
             }
 
-            return keyboardButtons;
+            InlineKeyboardMarkup replyKeyboardMarkup = new InlineKeyboardMarkup(keyboardButtons);
+            return replyKeyboardMarkup;
         }
 
         private InlineKeyboardButton[] SingleRowButtons(List<string> keyboardButtonNames)
