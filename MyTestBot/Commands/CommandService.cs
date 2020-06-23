@@ -3,29 +3,38 @@ using System;
 using System.Threading.Tasks;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot;
-using System.Diagnostics;
 using MyTestBot.Keyboard;
 using Telegram.Bot.Types;
 using MyTestBot.Commands.Enums;
+using MyTestBot.Translate;
+using System.Net.Http;
+using Newtonsoft.Json;
+using Serilog;
+using System.Text;
+using System.Diagnostics;
 
 namespace MyTestBot.Commands
 {
     public class CommandService
     {
-        private readonly BoredApiService _boredApiService;
+        private readonly ActivityService _boredApiService;
         private readonly KeyboardService _keyboardService;
+        private readonly TranslateService _translateService;
+        private readonly BotConfig _botConfig;
 
-        public CommandService(BoredApiService boredApiService, KeyboardService keyboardService)
+        public CommandService(ActivityService boredApiService, KeyboardService keyboardService, 
+            TranslateService translateService, BotConfig botConfig)
         {
             _boredApiService = boredApiService;
             _keyboardService = keyboardService;
+            _translateService = translateService;
+            _botConfig = botConfig;
         }
 
         public async Task Execute<T1, T2>(Update update, TelegramBotClient client) where T2 : Command
         {
             try
             {
-                //todo check how works with Commands where keyboard service only
                 var type = new Type[] { typeof(CommandService) };
                 var constructor = typeof(T2).GetConstructor(type);
                 var res = constructor.Invoke(new object[1]);
@@ -41,7 +50,7 @@ namespace MyTestBot.Commands
 
                     if (command.InnerNames != null && (bool)command.InnerNames?.Contains(inputData))
                     {
-                        await GenerateAndSendActivityToChat(command, update, client);
+                        await SendActivityToChat(command, update, client);
                     }
                     else
                     {
@@ -54,26 +63,20 @@ namespace MyTestBot.Commands
                 {
                     if (command?.Name == "random")
                     {
-                        await GenerateAndSendActivityToChat(command, update, client);
+                        await SendActivityToChat(command, update, client);
                     }
-                    //else if (command?.Name == "filter")
-                    //{
-                    //    await client.SendTextMessageAsync(update.Message.Chat.Id, command.Message,
-                    //        ParseMode.Markdown, false, false, 0,
-                    //        _keyboardService.ReplyKeyboardMarkup(command.InnerNames));
-                    //}
                 }
             }
             catch (Exception ex)
             {
-                Debugger.Break();
+                Debugger.Break(); Log.Error(ex, ex.Message);
             }
         }
 
         //here type of update is Message
-        public async Task GenerateAndSendActivityToChat(Command command, Update update, TelegramBotClient client)
+        public async Task SendActivityToChat(Command command, Update update, TelegramBotClient client)
         {
-            BoredActivity activity = null;
+            ActivityModel activityRequest = null;
             var commandType = command.GetType();
 
             string text = update?.Message?.Text ?? update.CallbackQuery.Data;
@@ -81,7 +84,7 @@ namespace MyTestBot.Commands
 
             try
             {
-                if (commandType == typeof(PriceCommand))
+                if (commandType == typeof(PriceCommand)) //todo check if possible delete
                 {
                     Enum.TryParse(text, out PriceEnum priceEnum);
                     int enumValue = (int)priceEnum;
@@ -89,50 +92,89 @@ namespace MyTestBot.Commands
                     text = valueForRequest;
                 }
 
-                activity = GenerateActivity(commandType.Name, text);
-                string content = _boredApiService.GetActivityContent(activity).Result;
-
-                await client.SendTextMessageAsync(chatId, content, ParseMode.Markdown);
+                activityRequest = GenerateActivityRequest(commandType.Name, text);
+                ActivityModel activityResult = _boredApiService.GetActivityContent(activityRequest).Result;
+                activityResult = await SetValueToActivityResult(activityResult);
+                await SendToDb(activityResult);
+                await client.SendTextMessageAsync(chatId, activityResult.Activity + $"\n({activityResult.ActivityRu})",
+                    ParseMode.Markdown);
             }
             catch (Exception ex)
             {
-                Debugger.Break();
+                Debugger.Break(); Log.Error(ex, ex.Message);
             }
         }
 
-        public BoredActivity GenerateActivity(string commandName, string inputData)
+        public ActivityModel GenerateActivityRequest(string commandName, string userInput)
         {
-            BoredActivity activity = new BoredActivity();
+            ActivityModel activity = new ActivityModel();
 
-            var activityProps = activity.GetType().GetProperties();
+            var properties = activity.GetType().GetProperties();
 
-            foreach (var prop in activityProps)
+            foreach (var property in properties)
             {
-                var propName = prop.Name;
+                var propertyName = property.Name;
 
-                if (commandName.StartsWith(propName))
+                if (propertyName == "Id" || propertyName == nameof(ActivityModel.ActivityRu) || 
+                    propertyName == nameof(ActivityModel.CreatedDate) || propertyName == nameof(ActivityModel.ModifiedDate))
                 {
-                    activity.GetType().GetProperty(propName).SetValue(activity, inputData);
-                    break; //todo break for now
+                    continue;
+                }
+
+                if (commandName.StartsWith(propertyName))
+                {
+                    if (commandName.Contains(nameof(ActivityModel.Accessibility), StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        double convertedInput = double.Parse(userInput);
+                        SetValueToActivityRequest(activity, propertyName, convertedInput);
+                    }
+                    else if (commandName.Contains(nameof(ActivityModel.Participants), StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        int convertedInputData = int.Parse(userInput);
+                        SetValueToActivityRequest(activity, propertyName, convertedInputData);
+                    }
+                    else if (commandName.Contains(nameof(ActivityModel.Price), StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        userInput = userInput.Substring(2);
+                        Enum.TryParse(userInput, out PriceEnum priceEnum);
+                        SetValueToActivityRequest(activity, propertyName, priceEnum);
+                    }
+                    else
+                    {
+                        SetValueToActivityRequest(activity, propertyName, userInput);
+                    }
+                    break; //todo later think how to set few parameters
                 }
             }
 
             return activity;
         }
 
-        //private bool TextEqualsInnerCommand<T>(T command, string text) where T : Command
-        //{
-        //    if (command.InnerNames == null || command.InnerNames?.Count == 0) return false;
+        private void SetValueToActivityRequest(ActivityModel activity, string propertyName, object value)
+        {
+            //todo check if works
+            activity.GetType().GetProperty(propertyName).SetValue(activity, value);
+        }
 
-        //    foreach (string name in command.InnerNames)
-        //    {
-        //        if (text == name)
-        //        {
-        //            return true;
-        //        }
-        //    }
+        private async Task<ActivityModel> SetValueToActivityResult(ActivityModel activity)
+        {
+            string en = activity.Activity;
+            string ru = await _translateService.Translate(en);
 
-        //    return false;
-        //}
+            activity.Id = Guid.NewGuid();
+            activity.CreatedDate = DateTime.Now;
+            activity.ActivityRu = ru;
+
+            return activity;
+        }
+
+        private async Task SendToDb(ActivityModel activity)
+        {
+            HttpClient client = new HttpClient();
+            string activityString = JsonConvert.SerializeObject(activity);
+            HttpContent content = new StringContent(activityString, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PostAsync(_botConfig.WebsiteUrl + "/api/activity", content);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

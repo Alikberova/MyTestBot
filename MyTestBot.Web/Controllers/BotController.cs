@@ -22,6 +22,7 @@ namespace MyTestBot.Web.Controllers
             return "Bot controller";
         }
 
+        //todo later add token
         [HttpPost]
         public async Task<OkResult> Post(JObject incomingObject)
         {

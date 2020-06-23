@@ -1,7 +1,11 @@
-﻿using MyTestBot.Commands;
+﻿using Microsoft.Extensions.Configuration;
+using MyTestBot.Commands;
+using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace MyTestBot.Web
@@ -10,31 +14,33 @@ namespace MyTestBot.Web
     {
         public async Task Handle(Update update)
         {
-            var botClient = await Bot.GetBotClientAsync();
-            var commands = Bot.Commands;
+            TelegramBotClient client = await Bot.GetBotClientAsync();
+            IReadOnlyList<Command> commands = Bot.Commands;
 
             try
             {
-                var message = update?.Message;
-                var callBack = update?.CallbackQuery;
+                Message message = update?.Message;
+                CallbackQuery callBack = update?.CallbackQuery;
+
+                if (!IsMe(message, client)) return;
 
                 foreach (Command command in commands)
                 {
                     if (message != null && command.Contains(message))
                     {
-                        await command.Execute<Message>(update, botClient);
+                        await command.Execute<Message>(update, client);
                         break;
                     }
                     else if (callBack != null)
                     {
                         if (command.Contains(callBack))
                         {
-                            await command.Execute<CallbackQuery>(update, botClient);
+                            await command.Execute<CallbackQuery>(update, client);
                             break;
                         }
                         else if (command.InnerNames != null && (bool)command.InnerNames?.Contains(callBack.Data))
                         {
-                            await command.Execute<CallbackQuery>(update, botClient);
+                            await command.Execute<CallbackQuery>(update, client);
                             break;
                         }
                     }
@@ -42,8 +48,25 @@ namespace MyTestBot.Web
             }
             catch (Exception ex)
             {
-                Debugger.Break();
+                Debugger.Break(); Log.Error(ex, ex.Message);
             }
+        }
+
+        private bool IsMe(Message message, TelegramBotClient client)
+        {
+            if (message == null) return true;
+
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            {
+                BotConfig config = Startup.StaticConfig.GetSection("BotConfig").Get<BotConfig>();
+
+                if (message?.From.Id != config.TelegramConfig.MyProfileId)
+                {
+                    client.SendTextMessageAsync(message.Chat.Id, "Sorry, I'm under development and not ready yet");
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

@@ -2,10 +2,12 @@
 {
     public enum PriceEnum
     {
+        Unspecified,
         Free,
         Cheap,
         Inexpensive,
         Average,
-        Expensive
+        Expensive,
+        VeryExpensive
     }
 }

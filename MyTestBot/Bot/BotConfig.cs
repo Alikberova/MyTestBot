@@ -1,13 +1,13 @@
-﻿namespace MyTestBot
+﻿using MyTestBot.Translate;
+
+namespace MyTestBot
 {
     public class BotConfig
     {
-        public string Token { get; set; }
+        public string WebsiteUrl { get; set; }
 
-        public string ApiId { get; set; }
+        public TelegramConfig TelegramConfig { get; set; }
 
-        public string ApiHash { get; set; }
-
-        public string SiteAdress { get; set; }
+        public TranslateConfig TranslateConfig { get; set; }
     }
 }

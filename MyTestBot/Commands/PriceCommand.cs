@@ -11,7 +11,9 @@ namespace MyTestBot.Commands
         public override string Name => nameof(FilterEnum.Price);
 
         public override List<string> InnerNames => new List<string>() { nameof(PriceEnum.Free), nameof(PriceEnum.Cheap),
-            nameof(PriceEnum.Inexpensive), nameof(PriceEnum.Average), nameof(PriceEnum.Expensive) };
+            nameof(PriceEnum.Inexpensive), nameof(PriceEnum.Average), nameof(PriceEnum.Expensive),
+            nameof(PriceEnum.VeryExpensive)
+        };
 
         public override string Message => "Price? Describe the cost of the event";
 

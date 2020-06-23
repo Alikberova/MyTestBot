@@ -16,12 +16,10 @@ namespace MyTestBot.Commands
 
         public override string Message => "Select which filter:";
 
-        private readonly CommandService _commandService;
         private readonly KeyboardService _keyboardService;
 
-        public FilterCommand(CommandService commandService, KeyboardService keyboardService)
+        public FilterCommand(KeyboardService keyboardService)
         {
-            _commandService = commandService;
             _keyboardService = keyboardService;
         }
 
