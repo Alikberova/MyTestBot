@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 using IUB.BoredApi;
 using IUB.Commands;
 using IUB.Keyboard;
-using IUB.Translate;
+using IUB.Translating;
 using IUB.Db;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,7 +53,7 @@ namespace IUB.Web
             services.AddScoped<KeyboardService>();
             services.AddScoped<CommandService>();
             services.AddScoped<BotService>();
-            services.AddScoped<TranslateService>();
+            services.AddScoped<TranslatingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

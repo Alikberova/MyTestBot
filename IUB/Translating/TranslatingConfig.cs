@@ -1,6 +1,6 @@
-﻿namespace IUB.Translate
+﻿namespace IUB.Translating
 {
-    public class TranslateConfig
+    public class TranslatingConfig
     {
         public string SubscriptionKey { get; set; }
 

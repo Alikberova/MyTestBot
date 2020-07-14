@@ -2,7 +2,7 @@
 using IUB.BoredApi;
 using IUB.Commands;
 using IUB.Keyboard;
-using IUB.Translate;
+using IUB.Translating;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -27,8 +27,8 @@ namespace IUB.Web
 
             var boredService = new ActivityService();
             var keyboardService = new KeyboardService();
-            var translateService = new TranslateService(botConfig);
-            var commandService = new CommandService(boredService, keyboardService, translateService, botConfig);
+            var translatingService = new TranslatingService(botConfig);
+            var commandService = new CommandService(boredService, keyboardService, translatingService, botConfig);
 
             commandsList = new List<Command>
             {

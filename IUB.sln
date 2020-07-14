@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IUB", "IUB\IUB.csproj", "{8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IUB.Web", "IUB.Web\IUB.Web.csproj", "{B53434D9-F458-48E2-B22A-4F70F367FC5F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IUB.Tests", "IUB.Tests\IUB.Tests.csproj", "{D6CE6DAE-F8D8-41D0-A57E-70DB502567A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B53434D9-F458-48E2-B22A-4F70F367FC5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B53434D9-F458-48E2-B22A-4F70F367FC5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B53434D9-F458-48E2-B22A-4F70F367FC5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6CE6DAE-F8D8-41D0-A57E-70DB502567A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6CE6DAE-F8D8-41D0-A57E-70DB502567A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6CE6DAE-F8D8-41D0-A57E-70DB502567A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6CE6DAE-F8D8-41D0-A57E-70DB502567A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

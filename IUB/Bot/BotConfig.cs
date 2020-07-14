@@ -1,4 +1,4 @@
-﻿using IUB.Translate;
+﻿using IUB.Translating;
 
 namespace IUB
 {
@@ -8,6 +8,6 @@ namespace IUB
 
         public TelegramConfig TelegramConfig { get; set; }
 
-        public TranslateConfig TranslateConfig { get; set; }
+        public TranslatingConfig TranslatingConfig { get; set; }
     }
 }

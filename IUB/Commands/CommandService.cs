@@ -6,7 +6,7 @@ using Telegram.Bot;
 using IUB.Keyboard;
 using Telegram.Bot.Types;
 using IUB.Commands.Enums;
-using IUB.Translate;
+using IUB.Translating;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Serilog;
@@ -19,15 +19,15 @@ namespace IUB.Commands
     {
         private readonly ActivityService _boredApiService;
         private readonly KeyboardService _keyboardService;
-        private readonly TranslateService _translateService;
+        private readonly TranslatingService _translatingService;
         private readonly BotConfig _botConfig;
 
         public CommandService(ActivityService boredApiService, KeyboardService keyboardService, 
-            TranslateService translateService, BotConfig botConfig)
+            TranslatingService translatingService, BotConfig botConfig)
         {
             _boredApiService = boredApiService;
             _keyboardService = keyboardService;
-            _translateService = translateService;
+            _translatingService = translatingService;
             _botConfig = botConfig;
         }
 
@@ -135,7 +135,10 @@ namespace IUB.Commands
                     }
                     else if (commandName.Contains(nameof(ActivityModel.Price), StringComparison.CurrentCultureIgnoreCase))
                     {
-                        userInput = userInput.Substring(2);
+                        if (userInput.StartsWith("0"))
+                        {
+                            userInput = userInput.Substring(2);
+                        }
                         Enum.TryParse(userInput, out PriceEnum priceEnum);
                         SetValueToActivityRequest(activity, propertyName, priceEnum);
                     }
@@ -150,6 +153,17 @@ namespace IUB.Commands
             return activity;
         }
 
+        public async Task SendToDb(ActivityModel activity)
+        {
+            //select count(Activity) from [dbo].[Activities] 
+            //SELECT DISTINCT TOP (1000) * FROM [dbo].[Activities] order by CreatedDate desc
+            HttpClient client = new HttpClient();
+            string activityString = JsonConvert.SerializeObject(activity);
+            HttpContent content = new StringContent(activityString, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PostAsync(_botConfig.WebsiteUrl + "/api/activity", content);
+            response.EnsureSuccessStatusCode();
+        }
+
         private void SetValueToActivityRequest(ActivityModel activity, string propertyName, object value)
         {
             //todo check if works
@@ -159,22 +173,13 @@ namespace IUB.Commands
         private async Task<ActivityModel> SetValueToActivityResult(ActivityModel activity)
         {
             string en = activity.Activity;
-            string ru = await _translateService.Translate(en);
+            string ru = await _translatingService.Translate(en);
 
             activity.Id = Guid.NewGuid();
             activity.CreatedDate = DateTime.Now;
             activity.ActivityRu = ru;
 
             return activity;
-        }
-
-        private async Task SendToDb(ActivityModel activity)
-        {
-            HttpClient client = new HttpClient();
-            string activityString = JsonConvert.SerializeObject(activity);
-            HttpContent content = new StringContent(activityString, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync(_botConfig.WebsiteUrl + "/api/activity", content);
-            response.EnsureSuccessStatusCode();
         }
     }
 }

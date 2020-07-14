@@ -1,4 +1,4 @@
-﻿namespace IUB.Translate
+﻿namespace IUB.Translating
 {
     public class Translate
     {
