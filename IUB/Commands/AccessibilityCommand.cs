@@ -10,8 +10,8 @@ namespace IUB.Commands
     {
         public override string Name => nameof(FilterEnum.Accessibility);
 
-        public override List<string> InnerNames => new List<string>() { "0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6",
-            "0.7", "0.8", "0.9", "1" };
+        public override List<object> InnerCommands => new List<object>() { 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6,
+            0.7, 0.8, 0.9, 1 };
 
         public override string Message => "Accessibility? How possible an event is to do with zero being the most accessible";
 

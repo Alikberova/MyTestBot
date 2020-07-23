@@ -11,7 +11,7 @@ namespace IUB.Commands
         //todo participants works as accessibility with "How much participants? - only when 1"
         public override string Name => nameof(FilterEnum.Participants);
 
-        public override List<string> InnerNames => new List<string>() { "1", "2", "3", "4", "5" };
+        public override List<object> InnerCommands => new List<object>() { 1, 2, 3, 4, 5 };
 
         public override string Message => "How much participants?";
 

@@ -12,7 +12,7 @@ namespace IUB.Commands
     {
         public override string Name => "filter";
 
-        public override List<string> InnerNames => null; //need to be null otherwise keyboard will try shows everytime
+        public override List<object> InnerCommands => null; //need to be null otherwise keyboard will try shows everytime
 
         public override string Message => "Select which filter:";
 

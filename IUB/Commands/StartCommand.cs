@@ -10,7 +10,7 @@ namespace IUB.Commands
         public override string Name => @"/start";
 
         //todo because of this list randomCommand works even if commented out @my_test_321_bot
-        public override List<string> InnerNames => null;
+        public override List<object> InnerCommands => null;
 
         public override string Message => "Send \"filter\" to pick avocation or type \"random\"";
 

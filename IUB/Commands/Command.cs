@@ -13,7 +13,7 @@ namespace IUB.Commands
         public abstract string Message { get; }
 
 #nullable enable
-        public abstract List<string> InnerNames { get; }
+        public abstract List<object> InnerCommands { get; }
 
         public abstract Task Execute<T>(Update update, TelegramBotClient client);
 

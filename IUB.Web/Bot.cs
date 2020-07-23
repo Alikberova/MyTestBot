@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
-using IUB.BoredApi;
 using IUB.Commands;
 using IUB.Keyboard;
 using IUB.Translating;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using IUB.Db;
+using Microsoft.EntityFrameworkCore;
 
 namespace IUB.Web
 {
@@ -24,11 +25,12 @@ namespace IUB.Web
             }
 
             BotConfig botConfig = Startup.StaticConfig.GetSection("BotConfig").Get<BotConfig>();
+            ActivityContext context = new ActivityContext((DbContextOptions<ActivityContext>)Startup.DbOptions);
 
-            var boredService = new ActivityService();
+            var repository = new Repository(context);
             var keyboardService = new KeyboardService();
             var translatingService = new TranslatingService(botConfig);
-            var commandService = new CommandService(boredService, keyboardService, translatingService, botConfig);
+            var commandService = new CommandService(keyboardService, translatingService, repository);
 
             commandsList = new List<Command>
             {

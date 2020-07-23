@@ -9,7 +9,7 @@ namespace IUB.BoredApi
     {
         public Guid? Id { get; set; }
 
-        //need have this name during using API
+        //todo: need have this name during using API
         public string Activity { get; set; }
 
         public string ActivityRu { get; set; }
@@ -17,7 +17,7 @@ namespace IUB.BoredApi
         public double? Accessibility { get; set; }
 
 #nullable enable
-        public string? Type { get; set; }
+        public string? Type { get; set; } //todo change to enum
 
         public int? Participants { get; set; }
 

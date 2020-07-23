@@ -9,7 +9,7 @@ namespace IUB.Commands
     {
         public override string Name => "random";
 
-        public override List<string> InnerNames => null;
+        public override List<object> InnerCommands => null;
 
         public override string Message => null;
 

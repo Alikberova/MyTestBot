@@ -7,11 +7,19 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace IUB.Web
 {
     public class BotService
     {
+        private readonly CommandService _commandService;
+
+        public BotService(CommandService commandService)
+        {
+            _commandService = commandService;
+        }
+
         public async Task Handle(Update update)
         {
             TelegramBotClient client = await Bot.GetBotClientAsync();
@@ -21,6 +29,7 @@ namespace IUB.Web
             {
                 Message message = update?.Message;
                 CallbackQuery callBack = update?.CallbackQuery;
+                long chatId = update?.Message?.Chat?.Id ?? update.CallbackQuery.Message.Chat.Id;
 
                 if (!IsMe(message, client)) return;
 
@@ -28,18 +37,24 @@ namespace IUB.Web
                 {
                     if (message != null && command.Contains(message))
                     {
+                        await client.SendChatActionAsync(chatId, ChatAction.Typing);
                         await command.Execute<Message>(update, client);
                         break;
                     }
                     else if (callBack != null)
                     {
+                        List<string> innerCommands = _commandService.ToStringInnerCommands(command.InnerCommands);
+
                         if (command.Contains(callBack))
                         {
+                            await client.SendChatActionAsync(chatId, ChatAction.Typing);
                             await command.Execute<CallbackQuery>(update, client);
                             break;
                         }
-                        else if (command.InnerNames != null && (bool)command.InnerNames?.Contains(callBack.Data))
-                        {
+                        
+                        else if (command.InnerCommands != null && innerCommands.Contains(callBack.Data))
+                         {
+                            await client.SendChatActionAsync(chatId, ChatAction.Typing);
                             await command.Execute<CallbackQuery>(update, client);
                             break;
                         }
@@ -62,7 +77,8 @@ namespace IUB.Web
 
                 if (message?.From.Id != config.TelegramConfig.MyProfileId)
                 {
-                    client.SendTextMessageAsync(message.Chat.Id, "Sorry, I'm under development and not ready yet");
+                    long chatId = message.Chat.Id;
+                    client.SendTextMessageAsync(chatId, "Sorry, I'm under development and not ready yet");
                     return false;
                 }
             }
