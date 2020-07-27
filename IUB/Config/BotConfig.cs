@@ -1,6 +1,6 @@
 ﻿using IUB.Translating;
 
-namespace IUB
+namespace IUB.Config
 {
     public class BotConfig
     {

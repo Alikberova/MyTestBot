@@ -1,4 +1,4 @@
-﻿namespace IUB
+﻿namespace IUB.Config
 {
     public class TelegramConfig
     {
