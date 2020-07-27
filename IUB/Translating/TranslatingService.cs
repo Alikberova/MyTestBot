@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using Serilog;
+﻿using IUB.Config;
+using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,23 +43,13 @@ namespace IUB.Translating
 
         private Translate[] Deserialize(string translateString)
         {
-            Translate[] translate = null;
-            try
-            {
-                translate = JsonConvert.DeserializeObject<Translate[]>(translateString);
-            }
-            catch (Exception ex)
-            {
-                Debugger.Break(); Log.Error(ex, ex.Message);
-            }
-
-            return translate;
+            return JsonConvert.DeserializeObject<Translate[]>(translateString);
         }
 
         private string Serialize(string input)
         {
             object[] body = new object[] { new { Text = input } };
-           return JsonConvert.SerializeObject(body);
+            return JsonConvert.SerializeObject(body);
         }
 
         private async Task<string> SendRequest(string route, string requestBody)

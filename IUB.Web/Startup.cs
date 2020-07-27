@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using IUB.Commands;
 using IUB.Keyboard;
 using IUB.Translating;
 using IUB.Db;
 using Microsoft.EntityFrameworkCore;
+using IUB.Config;
 
 namespace IUB.Web
 {
@@ -57,7 +57,6 @@ namespace IUB.Web
                 DbContextOptionsBuilder optionsBuilder = options.UseSqlServer(connection);
                 DbOptions = optionsBuilder.Options;
             });
-            //services.AddDbContextPool<ActivityContext>(options => options.UseSqlServer(connection));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

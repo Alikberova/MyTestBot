@@ -5,6 +5,5 @@
         public const string Translate = "translate";
 
         public const string Detect = "detect";
-
     }
 }

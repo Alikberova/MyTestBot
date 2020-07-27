@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using IUB.Db;
 using Microsoft.EntityFrameworkCore;
+using IUB.Config;
 
 namespace IUB.Web
 {

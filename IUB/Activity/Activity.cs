@@ -3,16 +3,15 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 
-namespace IUB.BoredApi
+namespace IUB.Activity
 {
-    public class ActivityModel //todo change name
+    public class Activity
     {
         public Guid? Id { get; set; }
 
-        //todo: need have this name during using API
-        public string Activity { get; set; }
+        public string TextEn { get; set; }
 
-        public string ActivityRu { get; set; }
+        public string TextRu { get; set; }
 
         public double? Accessibility { get; set; }
 

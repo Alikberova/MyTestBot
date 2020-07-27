@@ -56,11 +56,10 @@ namespace IUB.Web
 
         private static void CreateDbIfNotExists(IHost host)
         {
-            IServiceScope scope = host.Services.CreateScope();
-            IServiceProvider services = scope.ServiceProvider;
-
             try
             {
+                IServiceScope scope = host.Services.CreateScope();
+                IServiceProvider services = scope.ServiceProvider;
                 ActivityContext context = services.GetRequiredService<ActivityContext>();
                 context.Database.EnsureCreated();
             }

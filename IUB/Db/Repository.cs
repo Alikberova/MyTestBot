@@ -1,5 +1,4 @@
-﻿using IUB.BoredApi;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +17,7 @@ namespace IUB.Db
 
         //select count(Activity) from [dbo].[Activities] 
         //SELECT DISTINCT TOP (1000) * FROM [dbo].[Activities] order by CreatedDate desc
-        public async Task<ActivityModel> Get(string activityProperty, object value)
+        public async Task<Activity.Activity> Get(string activityProperty, object value)
         {
             var activities = (await GetAll())
                 .Where(a => a.GetType().GetProperty(activityProperty).GetValue(a).ToString() == value.ToString())
@@ -27,7 +26,7 @@ namespace IUB.Db
             return await GetRandom(activities);
         }
 
-        public async Task<ActivityModel> GetRandom(List<ActivityModel> activities = null)
+        public async Task<Activity.Activity> GetRandom(List<Activity.Activity> activities = null)
         {
             if (activities == null)
             {
@@ -36,11 +35,10 @@ namespace IUB.Db
             var rand = new Random();
             var skip = (int)(rand.NextDouble() * activities.Count());
 
-            var result = activities.OrderBy(o => o.Id).Skip(skip).Take(1).First();
-            return result;
+            return activities.OrderBy(o => o.Id).Skip(skip).Take(1).First();
         }
 
-        private async Task<List<ActivityModel>> GetAll()
+        private async Task<List<Activity.Activity>> GetAll()
         {
             return await _context.Activities.ToListAsync();
         }

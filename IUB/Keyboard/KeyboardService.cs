@@ -1,7 +1,5 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace IUB.Keyboard
@@ -12,42 +10,33 @@ namespace IUB.Keyboard
 
         public InlineKeyboardMarkup GetKeyboard(List<string> keyboardButtonNames)
         {
-            try
+            var rowsCount = (int)Math.Ceiling(keyboardButtonNames.Count / CountOfButtonsPerRow);
+            InlineKeyboardButton[][] keyboardButtons = new InlineKeyboardButton[rowsCount][];
+
+            if (keyboardButtonNames.Count > CountOfButtonsPerRow)
             {
-                var rowsCount = (int)Math.Ceiling(keyboardButtonNames.Count / CountOfButtonsPerRow);
-                InlineKeyboardButton[][] keyboardButtons = new InlineKeyboardButton[rowsCount][];
 
-                if (keyboardButtonNames.Count > CountOfButtonsPerRow)
+                for (int i = 0; i < keyboardButtons.Length; i++)
                 {
-
-                    for (int i = 0; i < keyboardButtons.Length; i++)
+                    if (keyboardButtonNames.Count < CountOfButtonsPerRow)
                     {
-                        if (keyboardButtonNames.Count < CountOfButtonsPerRow)
-                        {
-                            keyboardButtons.SetValue(SingleRowButtons(keyboardButtonNames), i);
-                            break;
-                        }
-
-                        List<string> buttonsNamesCountForLine = keyboardButtonNames.GetRange(0,
-                            (int)CountOfButtonsPerRow);
-                        keyboardButtonNames.RemoveRange(0, (int)CountOfButtonsPerRow);
-                        keyboardButtons.SetValue(SingleRowButtons(buttonsNamesCountForLine), i);
+                        keyboardButtons.SetValue(SingleRowButtons(keyboardButtonNames), i);
+                        break;
                     }
-                }
-                else
-                {
-                    keyboardButtons.SetValue(SingleRowButtons(keyboardButtonNames), 0);
-                }
 
-                InlineKeyboardMarkup replyKeyboardMarkup = new InlineKeyboardMarkup(keyboardButtons);
-                return replyKeyboardMarkup;
+                    List<string> buttonsNamesCountForLine = keyboardButtonNames.GetRange(0,
+                        (int)CountOfButtonsPerRow);
+                    keyboardButtonNames.RemoveRange(0, (int)CountOfButtonsPerRow);
+                    keyboardButtons.SetValue(SingleRowButtons(buttonsNamesCountForLine), i);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Debugger.Break(); Log.Error(ex, ex.Message);
+                keyboardButtons.SetValue(SingleRowButtons(keyboardButtonNames), 0);
             }
 
-            return null;
+            InlineKeyboardMarkup replyKeyboardMarkup = new InlineKeyboardMarkup(keyboardButtons);
+            return replyKeyboardMarkup;
         }
 
         private InlineKeyboardButton[] SingleRowButtons(List<string> keyboardButtonNames)

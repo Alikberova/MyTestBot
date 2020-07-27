@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using IUB.BoredApi;
 using IUB.Db;
 using Serilog;
 
@@ -23,39 +22,39 @@ namespace IUB.Web.Controllers
 
         // GET: api/Activity
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ActivityModel>>> GetActivities()
+        public async Task<ActionResult<IEnumerable<Activity.Activity>>> GetActivities()
         {
             return await _context.Activities.ToListAsync();
         }
 
         // GET: api/Activity/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ActivityModel>> GetActivityModel(Guid? id)
+        public async Task<ActionResult<Activity.Activity>> GetActivity(Guid? id)
         {
-            var activityModel = await _context.Activities.FindAsync(id);
+            var activity = await _context.Activities.FindAsync(id);
 
-            if (activityModel == null)
+            if (activity == null)
             {
                 return NotFound();
             }
 
-            return activityModel;
+            return activity;
         }
 
         // PUT: api/Activity/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutActivityModel(Guid? id, ActivityModel activityModel)
+        public async Task<IActionResult> PutActivity(Guid? id, Activity.Activity activity)
         {
             //todo later replace PriceEnum.Unspecified to Free
             //todo later make ui for editing activities
-            if (id != activityModel.Id)
+            if (id != activity.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(activityModel).State = EntityState.Modified;
+            _context.Entry(activity).State = EntityState.Modified;
 
             try
             {
@@ -63,7 +62,7 @@ namespace IUB.Web.Controllers
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                if (!ActivityModelExists(id))
+                if (!ActivityExists(id))
                 {
                     return NotFound();
                 }
@@ -81,31 +80,31 @@ namespace IUB.Web.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<ActivityModel>> PostActivityModel(ActivityModel activityModel)
+        public async Task<ActionResult<Activity.Activity>> PostActivity(Activity.Activity activity)
         {
-            _context.Activities.Add(activityModel);
+            _context.Activities.Add(activity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetActivityModel", new { id = activityModel.Id }, activityModel);
+            return CreatedAtAction("GetActivityModel", new { id = activity.Id }, activity);
         }
 
         // DELETE: api/Activity/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<ActivityModel>> DeleteActivityModel(Guid? id)
+        public async Task<ActionResult<Activity.Activity>> DeleteActivity(Guid? id)
         {
-            var activityModel = await _context.Activities.FindAsync(id);
-            if (activityModel == null)
+            var activity = await _context.Activities.FindAsync(id);
+            if (activity == null)
             {
                 return NotFound();
             }
 
-            _context.Activities.Remove(activityModel);
+            _context.Activities.Remove(activity);
             await _context.SaveChangesAsync();
 
-            return activityModel;
+            return activity;
         }
 
-        private bool ActivityModelExists(Guid? id)
+        private bool ActivityExists(Guid? id)
         {
             return _context.Activities.Any(e => e.Id == id);
         }
